@@ -1,8 +1,18 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart' hide Step;
 import 'package:flutter/scheduler.dart';
+import 'package:usapyon/background_view.dart';
+import 'package:usapyon/game_state.dart';
+import 'package:usapyon/pyon_player.dart';
+import 'package:usapyon/result_page.dart';
 import 'package:usapyon/step/cloud_step.dart';
+import 'package:usapyon/step/item_balloon.dart';
+import 'package:usapyon/step/item_carrot.dart';
+import 'package:usapyon/step/item_on_step.dart';
+import 'package:usapyon/step/item_spring.dart';
+import 'package:usapyon/step/item_spring_red.dart';
 import 'package:usapyon/step/move_step.dart';
 import 'package:usapyon/step/rock_step.dart';
 import 'package:usapyon/step/step.dart';
@@ -38,19 +48,21 @@ class GameView extends StatefulWidget {
 class GameViewState extends State<GameView> with TickerProviderStateMixin {
   late final Ticker ticker;
   Duration? prevTick;
-  double playerVerticalPositionCell = 0;
-  double playerVelocityCell = -60;
-  final double gravityCell = 150; // 33.3;
   int generatedStageId = 0;
   List<Step> currentSteps = [];
   List<TickDriven> tickDrivenSteps = [];
-  double playerHorizontalVelocityCell = 0;
-  double playerHorizontalPositionCell = 12;
-  double cameraShiftCell = 0;
+  double cameraShiftCell = -22;
+  double minVerticalPositionCell = 0;
+
+  final PyonPlayer _player = PyonPlayer();
+
+  GameState _gameState = GameState.beforeStart;
+  int countDownNumber = 0;
 
   @override
   void initState() {
     super.initState();
+    tickDrivenSteps.add(_player);
     addStage(0);
     ticker = createTicker((elapsed) {
       if (prevTick != null) {
@@ -65,13 +77,47 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    ticker.start();
+
+    assert(_gameState == GameState.beforeStart);
+
+    countDownNumber = 5;
+    _gameState = GameState.countDown;
+    Timer.periodic(const Duration(seconds: 1), (t) {
+      if (countDownNumber <= 1) {
+        t.cancel();
+        _gameState = GameState.inGame;
+        startGame();
+        return;
+      } else {
+        setState(() {
+          countDownNumber--;
+        });
+      }
+    });
+
+    // ticker.start();
   }
 
   @override
   void dispose() {
     ticker.dispose();
     super.dispose();
+  }
+
+  void startGame() {
+    ticker.start();
+  }
+
+  void finishGame() {
+    _gameState = GameState.finished;
+    _player.finish();
+    ticker.stop(canceled: true);
+    Timer.run(() {
+      Navigator.of(context).push(PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (_, __, ___) => const ResultPage(),
+      ));
+    });
   }
 
   void addStage(int stageId) {
@@ -81,32 +127,34 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
   }
 
   void forwardGame(Duration elapsed, Duration tickTime) {
-    playerVerticalPositionCell +=
-        tickTime.inMilliseconds / 1000 * playerVelocityCell;
-    playerHorizontalPositionCell +=
-        tickTime.inMilliseconds / 1000 * playerHorizontalVelocityCell;
-    if (playerHorizontalPositionCell >= 25.5 &&
-        playerHorizontalVelocityCell > 0) {
-      playerHorizontalPositionCell = -1.5;
-    } else if (playerHorizontalPositionCell <= -1.5 &&
-        playerHorizontalPositionCell < 0) {
-      playerHorizontalPositionCell = 25.5;
+    _player.forward(tickTime);
+    if (_gameState == GameState.gameOver) {
+      cameraShiftCell -= 0.3;
+      if (cameraShiftCell <= -27) {
+        cameraShiftCell = -27;
+        finishGame();
+      }
+      return;
+    }
+    minVerticalPositionCell =
+        min(minVerticalPositionCell, _player.verticalPositionCell);
+    if (_player.verticalPositionCell > minVerticalPositionCell + 40 + 2) {
+      _gameState = GameState.gameOver;
     }
 
-    cameraShiftCell += -playerVelocityCell * 0.005;
+    cameraShiftCell += -_player.verticalVelocityCell * 0.005;
     cameraShiftCell += -cameraShiftCell * 0.03;
 
-    playerVelocityCell = min(
-        playerVelocityCell + tickTime.inMilliseconds / 1000 * gravityCell, 60);
     // print(playerPositionCell);
-    if (playerVerticalPositionCell <= -(generatedStageId * 96 + 54)) {
+    if (_player.verticalPositionCell <= -(generatedStageId * 96 + 54)) {
       generatedStageId++;
       addStage(generatedStageId);
     }
     if (currentSteps.isNotEmpty) {
+      // プレイヤーから一定距離下にいった足場を削除する
       int removeIndex = 0;
-      while (
-          currentSteps[removeIndex].vCell >= playerVerticalPositionCell + 20) {
+      while (currentSteps[removeIndex].vCell >=
+          _player.verticalPositionCell + 40) {
         if (currentSteps[removeIndex] is TickDriven) {
           tickDrivenSteps.remove(currentSteps[removeIndex] as TickDriven);
         }
@@ -114,15 +162,13 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
       }
       currentSteps.removeRange(0, removeIndex);
       if (removeIndex > 0) print("Remove $removeIndex steps");
+
+      // 足場の当たり判定
       for (int i = 0; i < currentSteps.length; i++) {
         if (!currentSteps[i].isEnabled()) continue;
-        if (currentSteps[i].vCell + 1 < playerVerticalPositionCell) break;
-        if (currentSteps[i].vCell - 1 < playerVerticalPositionCell) {
-          if (currentSteps[i].checkHorizontalCollision(playerHorizontalPositionCell) &&
-              playerVelocityCell > 10) {
-            currentSteps[i].onTrample();
-            playerVelocityCell = -60;
-          }
+        if (currentSteps[i].vCell + 6 < _player.verticalPositionCell) break;
+        if (currentSteps[i].checkCollision(_player)) {
+          currentSteps[i].onTrample(_player, elapsed);
         }
       }
     }
@@ -144,34 +190,43 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
               final height = constraints.biggest.height;
               final cellWidthPx = width / 24;
               final cellHeightPx = cellWidthPx;
-              final centerCell = playerVerticalPositionCell + cameraShiftCell;
+              final centerCell = _player.verticalPositionCell + cameraShiftCell;
               final displayOffsetPx = height / 2 - centerCell * cellHeightPx;
               return Stack(
                 children: [
                   Positioned.fill(
+                      child: BackgroundView(
+                          width: width,
+                          height: height,
+                          centerCell: _player.verticalPositionCell)),
+                  Positioned.fill(
                     child: Stack(
-                      children: currentSteps.map((e) => 
-                        e.place(cellWidthPx, cellHeightPx, displayOffsetPx)
-                      ).toList(),
+                      children: currentSteps
+                          .map((e) => e.place(
+                              cellWidthPx, cellHeightPx, displayOffsetPx))
+                          .toList(),
                     ),
                   ),
                   Positioned(
-                    left: cellWidthPx * (playerHorizontalPositionCell - 1.5),
+                    left: cellWidthPx * (_player.horizontalPositionCell - 1.5),
                     top: cellHeightPx * (18 - cameraShiftCell),
-                    child: Container(
-                        width: cellWidthPx * 3,
-                        height: cellHeightPx * 6,
-                        color: Colors.red),
+                    child: Transform.rotate(
+                      angle: _player.rotationRad,
+                      child: Container(
+                          width: cellWidthPx * 3,
+                          height: cellHeightPx * 6,
+                          color: _player.color),
+                    ),
                   ),
                   Positioned(
                     left: 0,
                     right: 0,
                     bottom: 0,
                     child: Slider(
-                      value: playerHorizontalVelocityCell,
+                      value: _player.horizontalVelocityCell,
                       onChanged: (value) {
                         setState(() {
-                          playerHorizontalVelocityCell = value;
+                          _player.updateHorizontalVelocity(value);
                         });
                       },
                       min: -80,
@@ -182,8 +237,16 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
                     right: 8,
                     top: 8,
                     child: Text(
-                        """${(-playerVerticalPositionCell / 10).toStringAsFixed(0)} m"""
+                        """${(-_player.verticalPositionCell / 10).toStringAsFixed(0)} m"""
                             .trim()),
+                  ),
+                  Align(
+                    child: Visibility(
+                        visible: _gameState == GameState.countDown && countDownNumber <= 3,
+                        child: Text(
+                          countDownNumber.toString(),
+                          style: const TextStyle(fontSize: 200),
+                        )),
                   )
                 ],
               );
@@ -193,7 +256,8 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          playerVelocityCell = -60;
+          _player.verticalVelocityCell = -60;
+          // _player.startShooting(prevTick!, 2 * 1000);
         },
         child: const Icon(Icons.upcoming),
       ),
@@ -204,23 +268,34 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
   /// 下にあるものが先になるようにしている
   List<Step> generateRandomStage(int stageId) {
     print("Generate Stage $stageId");
-    return List.generate(20, (index) {
+    final items = <ItemOnStep>[];
+    final result = List.generate(25, (index) {
       final r = Random();
-      switch (r.nextInt(4)) {
+      switch (r.nextInt(5)) {
         case 0:
-          return WoodStep(
-              r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
+          {
+            final s =
+                WoodStep(r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
+            if (r.nextBool()) {
+              items.add(ItemCarrot(s.hCell, s.vCell, stageId));
+            }
+            return s;
+          }
         case 1:
           return RockStep(
               r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
         case 2:
           return CloudStep(
               r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
+        case 3:
+          return ItemBalloon(
+              r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
         default:
           return MoveStep(
               r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
       }
-    })
-      ..sort((a, b) => b.vCell - a.vCell);
+    });
+    result.addAll(items);
+    return result..sort((a, b) => b.vCell - a.vCell);
   }
 }

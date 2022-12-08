@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Step;
+import 'package:usapyon/pyon_player.dart';
 import 'package:usapyon/step/step.dart';
 import 'package:usapyon/step/tick_driven.dart';
 
@@ -10,8 +11,9 @@ class RockStep extends Step implements TickDriven {
   RockStep(super.hCell, super.vCell, super.stageId);
 
   @override
-  void onTrample() {
+  void onTrample(PyonPlayer player, Duration elapsed) {
     removed = true;
+    super.onTrample(player, elapsed);
   }
 
   @override
