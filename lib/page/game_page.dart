@@ -3,22 +3,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart' hide Step;
 import 'package:flutter/scheduler.dart';
+import 'package:usapyon/logic/generate_random_stage.dart';
 import 'package:usapyon/view/area_restrict_view.dart';
 import 'package:usapyon/view/background_view.dart';
 import 'package:usapyon/logic/game_state.dart';
 import 'package:usapyon/logic/pyon_player.dart';
 import 'package:usapyon/page/result_page.dart';
-import 'package:usapyon/step/cloud_step.dart';
-import 'package:usapyon/step/item_balloon.dart';
-import 'package:usapyon/step/item_carrot.dart';
-import 'package:usapyon/step/item_on_step.dart';
-import 'package:usapyon/step/item_spring.dart';
-import 'package:usapyon/step/item_spring_red.dart';
-import 'package:usapyon/step/move_step.dart';
-import 'package:usapyon/step/rock_step.dart';
 import 'package:usapyon/step/step.dart';
 import 'package:usapyon/step/tick_driven.dart';
-import 'package:usapyon/step/wood_step.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -173,11 +165,14 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
           final displayOffsetPx = height / 2 - centerCell * cellHeightPx;
           return Stack(
             children: [
+              //---------------------------------------------- 背景
               Positioned.fill(
                   child: BackgroundView(
                       width: width,
                       height: height,
                       centerCell: _player.verticalPositionCell)),
+
+              //---------------------------------------------- ステージ
               Positioned.fill(
                 child: Stack(
                   children: currentSteps
@@ -186,10 +181,14 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
                       .toList(),
                 ),
               ),
+
+              //---------------------------------------------- プレイヤー
               Positioned(
                   left: cellWidthPx * (_player.horizontalPositionCell - 1.5),
                   top: cellHeightPx * (18 - cameraShiftCell),
                   child: _player.place(cellWidthPx, cellHeightPx)),
+
+              //---------------------------------------------- 操作用スライダー
               Positioned(
                 left: 0,
                 right: 0,
@@ -205,6 +204,8 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   max: 80,
                 ),
               ),
+
+              //---------------------------------------------- メートル表示
               Positioned(
                 right: 8,
                 top: 8,
@@ -215,6 +216,8 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   style: const TextStyle(fontSize: 40),
                 ),
               ),
+
+              //---------------------------------------------- カウントダウン
               Align(
                 child: Visibility(
                     visible: _gameState == GameState.countDown &&
@@ -236,52 +239,5 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
         child: const Icon(Icons.upcoming),
       ),
     );
-  }
-
-  /// 横24、縦96マスのステージをランダムに生成
-  /// 下にあるものが先になるようにしている
-  List<Step> generateRandomStage(int stageId) {
-    print("Generate Stage $stageId");
-    final items = <ItemOnStep>[];
-    final result = List.generate(25, (index) {
-      final r = Random();
-      switch (r.nextInt(5)) {
-        case 0:
-          {
-            final s =
-                WoodStep(r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
-            switch (r.nextInt(3)) {
-              case 0:
-                items.add(ItemCarrot(s.hCell, s.vCell, stageId));
-                break;
-              case 1:
-                items.add(ItemSpring(s.hCell, s.vCell, stageId));
-                break;
-              case 2:
-                items.add(ItemSpringRed(s.hCell, s.vCell, stageId));
-                break;
-            }
-            return s;
-          }
-        case 1:
-          return RockStep(
-              r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
-        case 2:
-          return CloudStep(
-              r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
-        case 3:
-          if (r.nextInt(10) == 1) {
-            return ItemBalloon(
-                r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
-          }
-          return MoveStep(
-              r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
-        default:
-          return MoveStep(
-              r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
-      }
-    });
-    result.addAll(items);
-    return result..sort((a, b) => b.vCell - a.vCell);
   }
 }
