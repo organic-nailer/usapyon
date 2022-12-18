@@ -11,6 +11,7 @@ import 'package:usapyon/logic/pyon_player.dart';
 import 'package:usapyon/page/result_page.dart';
 import 'package:usapyon/step/step.dart';
 import 'package:usapyon/step/tick_driven.dart';
+import 'package:usapyon/view/count_down_view.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -31,11 +32,12 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   final PyonPlayer _player = PyonPlayer();
 
   GameState _gameState = GameState.beforeStart;
-  int countDownNumber = 0;
+  late final CountDownController _countDownController;
 
   @override
   void initState() {
     super.initState();
+    _countDownController = CountDownController();
     tickDrivenSteps.add(_player);
     addStage(0);
     ticker = createTicker((elapsed) {
@@ -54,27 +56,18 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
     assert(_gameState == GameState.beforeStart);
 
-    countDownNumber = 5;
     _gameState = GameState.countDown;
-    Timer.periodic(const Duration(seconds: 1), (t) {
-      if (countDownNumber <= 1) {
-        t.cancel();
-        _gameState = GameState.inGame;
-        startGame();
-        return;
-      } else {
-        setState(() {
-          countDownNumber--;
-        });
-      }
+    _countDownController.start();
+    _countDownController.addZeroCallback(() {
+      _gameState = GameState.inGame;
+      startGame();
     });
-
-    // ticker.start();
   }
 
   @override
   void dispose() {
     ticker.dispose();
+    _countDownController.dispose();
     super.dispose();
   }
 
@@ -219,13 +212,10 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
               //---------------------------------------------- カウントダウン
               Align(
-                child: Visibility(
-                    visible: _gameState == GameState.countDown &&
-                        countDownNumber <= 3,
-                    child: Text(
-                      countDownNumber.toString(),
-                      style: const TextStyle(fontSize: 200),
-                    )),
+                child: CountDownView(
+                  controller: _countDownController,
+                  visible: _gameState == GameState.countDown,
+                )
               )
             ],
           );
