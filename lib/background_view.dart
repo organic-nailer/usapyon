@@ -4,33 +4,43 @@ import 'package:flutter/material.dart';
 
 class BackgroundView extends StatelessWidget {
   final double width, height, centerCell;
-  const BackgroundView(
+  BackgroundView(
       {super.key,
       required this.width,
       required this.height,
-      required this.centerCell});
+      required this.centerCell}) {
+    if (createdWidth != width.toInt() || createdHeight != height.toInt()) {
+      backgroundImage = null;
+    }
+  }
 
   static Widget? backgroundImage;
+  static int? createdWidth;
+  static int? createdHeight;
 
   @override
   Widget build(BuildContext context) {
-    backgroundImage ??= Container(
-      width: width,
-      height: height * 2,
-      color: Colors.lightBlue,
-      child: Stack(
-        children: List.generate(10, (_) {
-          final r = Random();
-          final cloudWidth = width / 5;
-          final x = r.nextInt((width * 0.8).toInt());
-          final y = r.nextInt((height * 2 - width).toInt());
-          return Positioned(
-            left: x.toDouble(), top: y.toDouble(),
-            child: Image.asset("assets/google_cloud.png", width: cloudWidth,),
-          );
-        })
-      ),
-    );
+    if (backgroundImage == null) {
+      backgroundImage = Container(
+        width: width,
+        height: height * 2,
+        color: Colors.lightBlue,
+        child: Stack(
+          children: List.generate(10, (_) {
+            final r = Random();
+            final cloudWidth = width / 5;
+            final x = r.nextInt((width * 0.8).toInt());
+            final y = r.nextInt((height * 2 - width).toInt());
+            return Positioned(
+              left: x.toDouble(), top: y.toDouble(),
+              child: Image.asset("assets/google_cloud.png", width: cloudWidth,),
+            );
+          })
+        ),
+      );
+      createdWidth = width.toInt();
+      createdHeight = height.toInt();
+    }
     return Stack(
       children: [
         Positioned(
