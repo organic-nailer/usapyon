@@ -11,7 +11,7 @@ class WoodStep extends Step {
       left: hCell * cellWidthPx,
       top: vCell * cellHeightPx - cellHeightPx + displayOffsetPx,
       child: Image.asset(
-        "assets/wood.png",
+        "assets/wood.jpg",
         width: cellWidthPx * 5,
         height: cellHeightPx
       ),

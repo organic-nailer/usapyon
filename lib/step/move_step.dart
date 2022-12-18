@@ -16,7 +16,7 @@ class MoveStep extends Step implements TickDriven {
       left: (hCell + shiftCell) * cellWidthPx,
       top: vCell * cellHeightPx - cellHeightPx + displayOffsetPx,
       child: Image.asset(
-        "assets/move.png",
+        "assets/move.jpg",
         width: cellWidthPx * 5,
         height: cellHeightPx,
         color: Colors.blue.shade900

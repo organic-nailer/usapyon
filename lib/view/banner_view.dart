@@ -36,7 +36,7 @@ class BannerViewState extends State<BannerView> {
           await launchUrlString("https://www.ace-compliance.com/blog/wp-content/uploads/IMG_4688.jpg");
       },
       child: Image.asset(
-        bannerIsOne ? "assets/banner1.png" : "assets/banner2.png",
+        bannerIsOne ? "assets/banner1.jpg" : "assets/banner2.jpg",
       ),
     );
   }

@@ -26,7 +26,7 @@ class RockStep extends Step implements TickDriven {
       child: Opacity(
         opacity: 1 - brokenRate,
         child: Image.asset(
-          brokenRate == 0 ? "assets/rock.png" : "assets/rock_broken.png",
+          brokenRate == 0 ? "assets/rock.jpg" : "assets/rock_broken.png",
           width: cellWidthPx * 5,
           height: cellHeightPx
         ),
