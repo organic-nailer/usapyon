@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' hide Step;
 import 'package:usapyon/step/item_floating.dart';
-import 'package:usapyon/pyon_player.dart';
+import 'package:usapyon/logic/pyon_player.dart';
 
 class ItemBalloon extends ItemFloating {
   const ItemBalloon(super.hCell, super.vCell, super.stageId);

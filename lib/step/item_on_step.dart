@@ -1,4 +1,4 @@
-import 'package:usapyon/pyon_player.dart';
+import 'package:usapyon/logic/pyon_player.dart';
 import 'package:usapyon/step/step.dart';
 
 class ItemOnStep extends Step {

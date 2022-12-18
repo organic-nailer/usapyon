@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' hide Step;
-import 'package:usapyon/pyon_player.dart';
+import 'package:usapyon/logic/pyon_player.dart';
 import 'package:usapyon/step/step.dart';
 import 'package:usapyon/step/tick_driven.dart';
 

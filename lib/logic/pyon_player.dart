@@ -1,20 +1,24 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:usapyon/player_state.dart';
+import 'package:usapyon/logic/player_state.dart';
 import 'package:usapyon/step/tick_driven.dart';
 
 class PyonPlayer implements TickDriven {
   static const double gravityCell = 150; // 33.3;
-  static const String imgSmileCenterBalloon = "assets/rabbit_smile_center_balloon.png";
+  static const String imgSmileCenterBalloon =
+      "assets/rabbit_smile_center_balloon.png";
   static const String imgSmileCenter = "assets/rabbit_smile_center.png";
   static const String imgSmileClose = "assets/rabbit_smile_close.png";
-  static const String imgSmileOpenBalloon = "assets/rabbit_smile_open_balloon.png";
+  static const String imgSmileOpenBalloon =
+      "assets/rabbit_smile_open_balloon.png";
   static const String imgSmileOpen = "assets/rabbit_smile_open.png";
-  static const String imgStraightCenterBalloon = "assets/rabbit_straight_center_balloon.png";
+  static const String imgStraightCenterBalloon =
+      "assets/rabbit_straight_center_balloon.png";
   static const String imgStraightCenter = "assets/rabbit_straight_center.png";
   static const String imgStraightClose = "assets/rabbit_straight_close.png";
-  static const String imgStraightOpenBalloon = "assets/rabbit_straight_open_balloon.png";
+  static const String imgStraightOpenBalloon =
+      "assets/rabbit_straight_open_balloon.png";
   static const String imgStraightOpen = "assets/rabbit_straight_open.png";
   static const String imgTroubledClose = "assets/rabbit_troubled_close.png";
   double verticalPositionCell = 0;
@@ -31,9 +35,8 @@ class PyonPlayer implements TickDriven {
   Widget place(double cellWidthPx, double cellHeightPx) {
     return Transform.rotate(
       angle: rotationRad,
-      child: Image.asset(
-        image,
-        width: cellWidthPx * 3, height: cellHeightPx * 6),
+      child:
+          Image.asset(image, width: cellWidthPx * 3, height: cellHeightPx * 6),
     );
   }
 

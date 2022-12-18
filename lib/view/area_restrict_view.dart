@@ -9,15 +9,14 @@ class AreaRestrictView extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final aspect = constraints.biggest.aspectRatio;
-        if (aspect > 9/16) {
+        if (aspect > 9 / 16) {
           return Center(
             child: AspectRatio(
-              aspectRatio: 9/16,
+              aspectRatio: 9 / 16,
               child: child,
             ),
           );
-        }
-        else {
+        } else {
           return child;
         }
       },

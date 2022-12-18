@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:usapyon/area_restrict_view.dart';
-import 'package:usapyon/main.dart';
-import 'package:usapyon/pyon_button.dart';
-import 'package:usapyon/start_page.dart';
-import 'package:usapyon/stroked_text.dart';
+import 'package:usapyon/page/game_page.dart';
+import 'package:usapyon/view/area_restrict_view.dart';
+import 'package:usapyon/view/pyon_button.dart';
+import 'package:usapyon/page/start_page.dart';
+import 'package:usapyon/view/stroked_text.dart';
 
 class ResultPage extends StatefulWidget {
   final double heightMeter;
@@ -14,7 +14,8 @@ class ResultPage extends StatefulWidget {
   State<StatefulWidget> createState() => ResultPageState();
 }
 
-class ResultPageState extends State<ResultPage> with SingleTickerProviderStateMixin {
+class ResultPageState extends State<ResultPage>
+    with SingleTickerProviderStateMixin {
   late final int aquisitionCredits;
   late final AnimationController _gradeTextController;
 
@@ -23,9 +24,7 @@ class ResultPageState extends State<ResultPage> with SingleTickerProviderStateMi
     super.initState();
     aquisitionCredits = (widget.heightMeter / 100).floor();
     _gradeTextController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000)
-    );
+        vsync: this, duration: const Duration(milliseconds: 1000));
     _gradeTextController.forward();
   }
 
@@ -65,11 +64,9 @@ class ResultPageState extends State<ResultPage> with SingleTickerProviderStateMi
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 32),
                       child: ScaleTransition(
-                        scale: _gradeTextController.drive(
-                          CurveTween(curve: Curves.easeInCubic)
-                        ).drive(
-                          Tween(begin: 5.0, end: 1.0)
-                        ),
+                        scale: _gradeTextController
+                            .drive(CurveTween(curve: Curves.easeInCubic))
+                            .drive(Tween(begin: 5.0, end: 1.0)),
                         child: StrokedText(
                           text: getGrade(widget.heightMeter),
                           fontSize: 50,
@@ -140,7 +137,7 @@ class ResultPageState extends State<ResultPage> with SingleTickerProviderStateMi
                                 onPressed: () {
                                   Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
-                                          builder: (_) => StartPage()));
+                                          builder: (_) => const StartPage()));
                                 },
                               ),
                             )),

@@ -5,7 +5,12 @@ class StrokedText extends StatelessWidget {
   final double? fontSize;
   final Color strokeColor;
   final Color innerColor;
-  const StrokedText({super.key, required this.text, this.fontSize, required this.strokeColor, required this.innerColor});
+  const StrokedText(
+      {super.key,
+      required this.text,
+      this.fontSize,
+      required this.strokeColor,
+      required this.innerColor});
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +20,9 @@ class StrokedText extends StatelessWidget {
         Text(
           text,
           style: TextStyle(
-            fontSize: fontSize,
-            color: innerColor,
-            fontWeight: FontWeight.bold
-          ),
+              fontSize: fontSize,
+              color: innerColor,
+              fontWeight: FontWeight.bold),
         ),
         Text(
           text,

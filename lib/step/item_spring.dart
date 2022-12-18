@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' hide Step;
 import 'package:usapyon/step/item_on_step.dart';
-import 'package:usapyon/pyon_player.dart';
+import 'package:usapyon/logic/pyon_player.dart';
 
 class ItemSpring extends ItemOnStep {
   const ItemSpring(super.hCell, super.vCell, super.stageId);

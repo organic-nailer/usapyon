@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:usapyon/pyon_player.dart';
+import 'package:usapyon/logic/pyon_player.dart';
 
 class Step {
   final int hCell;
