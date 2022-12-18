@@ -61,10 +61,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/hiyoshi_sanctuary.png
-    - assets/facebook.png
-    - assets/line.png
-    - assets/twitter.png
+    - assets/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

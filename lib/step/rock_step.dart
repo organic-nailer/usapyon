@@ -5,6 +5,7 @@ import 'package:usapyon/step/tick_driven.dart';
 
 
 class RockStep extends Step implements TickDriven {
+  Duration? startAnimation;
   bool removed = false;
   double brokenRate = 0.0;
   Duration? startBroken;
@@ -22,16 +23,12 @@ class RockStep extends Step implements TickDriven {
     return Positioned(
       left: hCell * cellWidthPx,
       top: vCell * cellHeightPx - cellHeightPx + displayOffsetPx,
-      child: Container(
-        width: cellWidthPx * 5,
-        height: cellHeightPx,
-        child: Text("($stageId:$hCell,$vCell)"),
-        decoration: BoxDecoration(
-          color: removed ? Colors.transparent : Colors.blueGrey,
-          border: Border.all(
-            color: Colors.red.withOpacity(brokenRate),
-            width: 2,
-          )
+      child: Opacity(
+        opacity: 1 - brokenRate,
+        child: Image.asset(
+          brokenRate == 0 ? "assets/rock.png" : "assets/rock_broken.png",
+          width: cellWidthPx * 5,
+          height: cellHeightPx
         ),
       ),
     );

@@ -15,11 +15,11 @@ class MoveStep extends Step implements TickDriven {
     return Positioned(
       left: (hCell + shiftCell) * cellWidthPx,
       top: vCell * cellHeightPx - cellHeightPx + displayOffsetPx,
-      child: Container(
+      child: Image.asset(
+        "assets/move.png",
         width: cellWidthPx * 5,
         height: cellHeightPx,
-        color: Colors.blue.shade900,
-        child: Text("($stageId:$hCell,$vCell)"),
+        color: Colors.blue.shade900
       ),
     );
   }

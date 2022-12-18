@@ -15,11 +15,10 @@ class ItemBalloon extends ItemFloating {
     return Positioned(
       left: hCell * cellWidthPx,
       top: (vCell - 3) * cellHeightPx + displayOffsetPx,
-      child: Container(
+      child: Image.asset(
+        "assets/balloon.png",
         width: cellWidthPx * 2,
-        height: cellHeightPx * 3,
-        color: Colors.lime,
-        child: const Text("Balloon"),
+        height: cellHeightPx * 3
       ),
     );
   }

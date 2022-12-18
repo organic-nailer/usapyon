@@ -10,11 +10,10 @@ class WoodStep extends Step {
     return Positioned(
       left: hCell * cellWidthPx,
       top: vCell * cellHeightPx - cellHeightPx + displayOffsetPx,
-      child: Container(
+      child: Image.asset(
+        "assets/wood.png",
         width: cellWidthPx * 5,
-        height: cellHeightPx,
-        color: Colors.yellow,
-        child: Text("($stageId:$hCell,$vCell)"),
+        height: cellHeightPx
       ),
     );
   }

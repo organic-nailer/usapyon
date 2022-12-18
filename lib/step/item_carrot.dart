@@ -15,11 +15,10 @@ class ItemCarrot extends ItemOnStep {
     return Positioned(
       left: (hCell + 1) * cellWidthPx,
       top: (vCell - 4) * cellHeightPx + displayOffsetPx,
-      child: Container(
+      child: Image.asset(
+        "assets/carrot.png",
         width: cellWidthPx * 3,
-        height: cellHeightPx * 3,
-        color: Colors.deepOrange,
-        child: const Text("Carrot"),
+        height: cellHeightPx * 3
       ),
     );
   }

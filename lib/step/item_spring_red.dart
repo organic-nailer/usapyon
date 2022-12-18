@@ -15,11 +15,11 @@ class ItemSpringRed extends ItemOnStep {
     return Positioned(
       left: (hCell + 1) * cellWidthPx,
       top: (vCell - 3) * cellHeightPx + displayOffsetPx,
-      child: Container(
+      child: Image.asset(
+        "assets/spring_red.png",
         width: cellWidthPx * 3,
         height: cellHeightPx * 2,
-        color: Colors.red,
-        child: const Text("Spring"),
+        color: Colors.red
       ),
     );
   }

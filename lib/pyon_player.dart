@@ -6,6 +6,17 @@ import 'package:usapyon/step/tick_driven.dart';
 
 class PyonPlayer implements TickDriven {
   static const double gravityCell = 150; // 33.3;
+  static const String imgSmileCenterBalloon = "assets/rabbit_smile_center_balloon.png";
+  static const String imgSmileCenter = "assets/rabbit_smile_center.png";
+  static const String imgSmileClose = "assets/rabbit_smile_close.png";
+  static const String imgSmileOpenBalloon = "assets/rabbit_smile_open_balloon.png";
+  static const String imgSmileOpen = "assets/rabbit_smile_open.png";
+  static const String imgStraightCenterBalloon = "assets/rabbit_straight_center_balloon.png";
+  static const String imgStraightCenter = "assets/rabbit_straight_center.png";
+  static const String imgStraightClose = "assets/rabbit_straight_close.png";
+  static const String imgStraightOpenBalloon = "assets/rabbit_straight_open_balloon.png";
+  static const String imgStraightOpen = "assets/rabbit_straight_open.png";
+  static const String imgTroubledClose = "assets/rabbit_troubled_close.png";
   double verticalPositionCell = 0;
   double horizontalPositionCell = 12;
   double verticalVelocityCell = -60;
@@ -14,14 +25,23 @@ class PyonPlayer implements TickDriven {
   PlayerState state = PlayerState.jumping;
   Duration? startTransition;
   int transitionMillisec = 0;
-  Color color = Colors.red;
+  String image = imgStraightClose;
   double rotationRad = 0;
+
+  Widget place(double cellWidthPx, double cellHeightPx) {
+    return Transform.rotate(
+      angle: rotationRad,
+      child: Image.asset(
+        image,
+        width: cellWidthPx * 3, height: cellHeightPx * 6),
+    );
+  }
 
   void startTrample(Duration start) {
     verticalVelocityCell = -60;
     startTransition = start;
     state = PlayerState.trample;
-    color = Colors.pink.shade100;
+    image = imgStraightCenter;
     rotationRad = 0;
   }
 
@@ -30,7 +50,7 @@ class PyonPlayer implements TickDriven {
     startTransition = start;
     transitionMillisec = time;
     state = PlayerState.shooting;
-    color = Colors.deepPurple;
+    image = imgSmileCenter;
     rotationRad = 0;
   }
 
@@ -39,7 +59,6 @@ class PyonPlayer implements TickDriven {
     startTransition = start;
     transitionMillisec = time;
     state = PlayerState.rotation;
-    color = Colors.teal;
     rotationRad = 0;
   }
 
@@ -48,7 +67,7 @@ class PyonPlayer implements TickDriven {
     startTransition = start;
     transitionMillisec = time;
     state = PlayerState.floating;
-    color = Colors.limeAccent.shade700;
+    image = imgSmileCenterBalloon;
     rotationRad = 0;
     updateHorizontalVelocity(horizontalVelocityCell);
   }
@@ -56,17 +75,16 @@ class PyonPlayer implements TickDriven {
   void updateHorizontalVelocity(double newValue) {
     if (state == PlayerState.floating) {
       horizontalVelocityCell = newValue > 0 ? 20 : -20;
-    }
-    else {
+    } else {
       horizontalVelocityCell = newValue;
     }
   }
 
   void finish() {
-    color = Colors.brown;
+    image = imgTroubledClose;
   }
 
-  void _patapata(double phase, {bool rot = true}) {
+  void _patapata(double phase, {bool rot = true, bool balloon = false}) {
     assert(phase >= 0.0 && phase <= 1.0);
     phase = phase <= 0.5 ? phase * 2 : (1 - phase) * 2;
     if (rot) {
@@ -75,11 +93,11 @@ class PyonPlayer implements TickDriven {
 
     final colorPhase = phase <= 0.5 ? phase * 2 : (1 - phase) * 2;
     if (colorPhase <= 0.4) {
-      color = Colors.deepPurple.shade200;
+      image = balloon ? imgSmileCenterBalloon : imgSmileCenter;
     } else if (colorPhase <= 0.8) {
-      color = Colors.deepPurple;
+      image = balloon ? imgSmileOpenBalloon : imgSmileOpen;
     } else {
-      color = Colors.deepPurple.shade800;
+      image = balloon ? imgSmileCenterBalloon : imgSmileCenter;
     }
   }
 
@@ -110,15 +128,15 @@ class PyonPlayer implements TickDriven {
       if (state == PlayerState.trample) {
         final t = (elapsed - startTransition!).inMilliseconds;
         if (t < 100) {
-          color = Colors.pink.shade100;
+          image = imgStraightCenter;
         } else if (t < 200) {
-          color = Colors.pink.shade300;
+          image = imgStraightOpen;
         } else if (t < 300) {
-          color = Colors.pink.shade700;
+          image = imgStraightCenter;
         } else {
           state = PlayerState.jumping;
           startTransition = null;
-          color = Colors.red;
+          image = imgStraightClose;
         }
       } else if (state == PlayerState.shooting) {
         final t = (elapsed - startTransition!).inMilliseconds;
@@ -127,7 +145,7 @@ class PyonPlayer implements TickDriven {
         } else {
           state = PlayerState.jumping;
           startTransition = null;
-          color = Colors.red;
+          image = imgStraightClose;
           rotationRad = 0;
         }
       } else if (state == PlayerState.rotation) {
@@ -138,23 +156,22 @@ class PyonPlayer implements TickDriven {
         } else {
           state = PlayerState.jumping;
           startTransition = null;
-          color = Colors.red;
+          image = imgStraightClose;
           rotationRad = 0;
         }
       } else if (state == PlayerState.floating) {
         final t = (elapsed - startTransition!).inMilliseconds;
         if (t < transitionMillisec) {
-          _patapata((t % 500) / 500, rot: false);
+          _patapata((t % 500) / 500, rot: false, balloon: true);
           if (horizontalVelocityCell > 0) {
             rotationRad = pi / 12;
-          }
-          else {
+          } else {
             rotationRad = -pi / 12;
           }
         } else {
           state = PlayerState.jumping;
           startTransition = null;
-          color = Colors.red;
+          image = imgStraightClose;
           rotationRad = 0;
         }
       }

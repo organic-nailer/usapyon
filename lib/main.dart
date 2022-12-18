@@ -207,13 +207,7 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
               Positioned(
                 left: cellWidthPx * (_player.horizontalPositionCell - 1.5),
                 top: cellHeightPx * (18 - cameraShiftCell),
-                child: Transform.rotate(
-                  angle: _player.rotationRad,
-                  child: Container(
-                      width: cellWidthPx * 3,
-                      height: cellHeightPx * 6,
-                      color: _player.color),
-                ),
+                child: _player.place(cellWidthPx, cellHeightPx)
               ),
               Positioned(
                 left: 0,
@@ -271,8 +265,16 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
           {
             final s =
                 WoodStep(r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
-            if (r.nextBool()) {
-              items.add(ItemCarrot(s.hCell, s.vCell, stageId));
+            switch(r.nextInt(3)) {
+              case 0:
+                items.add(ItemCarrot(s.hCell, s.vCell, stageId));
+                break;
+              case 1:
+                items.add(ItemSpring(s.hCell, s.vCell, stageId));
+                break;
+              case 2:
+                items.add(ItemSpringRed(s.hCell, s.vCell, stageId));
+                break;
             }
             return s;
           }
@@ -282,9 +284,12 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
         case 2:
           return CloudStep(
               r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
-        // case 3:
-        //   return ItemBalloon(
-        //       r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
+        case 3:
+          if (r.nextInt(10) == 1) {
+            return ItemBalloon(
+                r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
+          }
+          return MoveStep(r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);
         default:
           return MoveStep(
               r.nextInt(24), -r.nextInt(96) - stageId * 96, stageId);

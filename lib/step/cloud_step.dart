@@ -31,11 +31,10 @@ class CloudStep extends Step implements TickDriven {
       top: vCell * cellHeightPx - cellHeightPx + displayOffsetPx,
       child: Opacity(
         opacity: opacity,
-        child: Container(
+        child: Image.asset(
+          "assets/cloud.png",
           width: cellWidthPx * 5,
-          height: cellHeightPx,
-          color: Colors.grey,
-          child: Text("($stageId:$hCell,$vCell)"),
+          height: cellHeightPx
         ),
       ),
     );
