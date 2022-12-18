@@ -116,7 +116,9 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
     Timer.run(() {
       Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
-        pageBuilder: (_, __, ___) => const ResultPage(1000),
+        pageBuilder: (_, __, ___) => ResultPage(
+          (-minVerticalPositionCell / 10)
+        ),
       ));
     });
   }
@@ -228,8 +230,8 @@ class GameViewState extends State<GameView> with TickerProviderStateMixin {
                 right: 8,
                 top: 8,
                 child: Text(
-                    """${(-_player.verticalPositionCell / 10).toStringAsFixed(0)} m"""
-                        .trim()),
+                    minVerticalPositionCell == 0 ? "0 m" : "${(-minVerticalPositionCell / 10).toStringAsFixed(0)} m", 
+                    style: const TextStyle(fontSize: 40),),
               ),
               Align(
                 child: Visibility(
