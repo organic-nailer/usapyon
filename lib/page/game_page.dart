@@ -20,14 +20,14 @@ import 'package:usapyon/step/step.dart';
 import 'package:usapyon/step/tick_driven.dart';
 import 'package:usapyon/step/wood_step.dart';
 
-class GameView extends StatefulWidget {
-  const GameView({super.key});
+class GamePage extends StatefulWidget {
+  const GamePage({super.key});
 
   @override
-  State<StatefulWidget> createState() => GameViewState();
+  State<StatefulWidget> createState() => GamePageState();
 }
 
-class GameViewState extends State<GameView> with TickerProviderStateMixin {
+class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   late final Ticker ticker;
   Duration? prevTick;
   int generatedStageId = 0;

@@ -150,7 +150,7 @@ class ResultPageState extends State<ResultPage>
                                 onPressed: () {
                                   Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
-                                          builder: (_) => const GameView()));
+                                          builder: (_) => const GamePage()));
                                 },
                               ),
                             ))
