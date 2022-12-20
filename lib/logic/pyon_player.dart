@@ -2,9 +2,22 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:usapyon/logic/player_state.dart';
+import 'package:usapyon/step/rigid_body.dart';
 import 'package:usapyon/step/tick_driven.dart';
 
-class PyonPlayer implements TickDriven {
+///
+///# 配置
+///
+///★の位置が座標
+///
+///```
+///┌───┐
+///│　　　│
+///│　　　│
+///│　　　│
+///└─★─┘
+///```
+class PyonPlayer implements TickDriven, RigidBody {
   static const double gravityCell = 150; // 33.3;
   static const String imgSmileCenterBalloon =
       "assets/rabbit_smile_center_balloon.png";
@@ -26,17 +39,41 @@ class PyonPlayer implements TickDriven {
   double verticalVelocityCell = -60;
   double horizontalVelocityCell = 0;
 
+  static const int widthCell = 4;
+  static const int heightCell = 8;
+
+  @override
+  Rect get shellRectCell => Rect.fromLTWH(
+      horizontalPositionCell - widthCell / 2,
+      verticalPositionCell - heightCell,
+      widthCell.toDouble(),
+      heightCell.toDouble());
+
+  @override
+  Rect get shellFootRectCell => Rect.fromLTWH(
+      horizontalPositionCell - widthCell / 2,
+      verticalPositionCell-1,
+      widthCell.toDouble(),
+      1);
+
+  @override
+  void onCollision(PyonPlayer player, Duration elapsed) { }
+
   PlayerState state = PlayerState.jumping;
   Duration? startTransition;
   int transitionMillisec = 0;
   String image = imgStraightClose;
   double rotationRad = 0;
 
-  Widget place(double cellWidthPx, double cellHeightPx) {
-    return Transform.rotate(
-      angle: rotationRad,
-      child:
-          Image.asset(image, width: cellWidthPx * 3, height: cellHeightPx * 6),
+  Widget place(double cellWidthPx, double cellHeightPx, double displayOffsetPx) {
+    return Positioned(
+      left: cellWidthPx * (horizontalPositionCell - widthCell / 2),
+      top: cellHeightPx * (verticalPositionCell - heightCell) + displayOffsetPx,
+      child: Transform.rotate(
+        angle: rotationRad,
+        child: Image.asset(image,
+            width: cellWidthPx * widthCell, height: cellHeightPx * heightCell),
+      ),
     );
   }
 
@@ -111,10 +148,13 @@ class PyonPlayer implements TickDriven {
     // 水平位置の更新
     horizontalPositionCell +=
         tickTime.inMilliseconds / 1000 * horizontalVelocityCell;
-    if (horizontalPositionCell >= 25.5 && horizontalVelocityCell > 0) {
-      horizontalPositionCell = -1.5;
-    } else if (horizontalPositionCell <= -1.5 && horizontalPositionCell < 0) {
-      horizontalPositionCell = 25.5;
+    // 左右端で見えなくなったらもう一方に移動する
+    if (horizontalPositionCell >= 24 + widthCell / 2 &&
+        horizontalVelocityCell > 0) {
+      horizontalPositionCell = -widthCell / 2;
+    } else if (horizontalPositionCell <= -widthCell / 2 &&
+        horizontalPositionCell < 0) {
+      horizontalPositionCell = 24 + widthCell / 2;
     }
 
     // 垂直速度の更新

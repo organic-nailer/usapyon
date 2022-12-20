@@ -6,9 +6,12 @@ class ItemBalloon extends ItemFloating {
   const ItemBalloon(super.hCell, super.vCell, super.stageId);
 
   @override
-  void onTrample(PyonPlayer player, Duration elapsed) {
+  void onCollision(PyonPlayer player, Duration elapsed) {
     player.startFloating(elapsed, 3000);
   }
+
+  @override
+  Rect get shellRectCell => Rect.fromLTWH(hCell.toDouble(), vCell - 3, 2, 3);
 
   @override
   Widget place(double cellWidthPx, double cellHeightPx, double displayOffsetPx) {

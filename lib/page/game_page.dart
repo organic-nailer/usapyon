@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart' hide Step;
 import 'package:flutter/scheduler.dart';
 import 'package:usapyon/logic/generate_random_stage.dart';
+import 'package:usapyon/step/stage_component.dart';
 import 'package:usapyon/view/area_restrict_view.dart';
 import 'package:usapyon/view/background_view.dart';
 import 'package:usapyon/logic/game_state.dart';
@@ -24,7 +25,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   late final Ticker ticker;
   Duration? prevTick;
   int generatedStageId = 0;
-  List<Step> currentSteps = [];
+  List<StageComponent> currentComponents = [];
   List<TickDriven> tickDrivenSteps = [];
   double cameraShiftCell = -22;
   double minVerticalPositionCell = 0;
@@ -85,7 +86,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
   void addStage(int stageId) {
     final newSteps = generateRandomStage(stageId);
-    currentSteps.addAll(newSteps);
+    currentComponents.addAll(newSteps);
     tickDrivenSteps.addAll(newSteps.whereType<TickDriven>());
   }
 
@@ -114,25 +115,25 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
       generatedStageId++;
       addStage(generatedStageId);
     }
-    if (currentSteps.isNotEmpty) {
+    if (currentComponents.isNotEmpty) {
       // プレイヤーから一定距離下にいった足場を削除する
       int removeIndex = 0;
-      while (currentSteps[removeIndex].vCell >=
+      while (currentComponents[removeIndex].vCell >=
           _player.verticalPositionCell + 40) {
-        if (currentSteps[removeIndex] is TickDriven) {
-          tickDrivenSteps.remove(currentSteps[removeIndex] as TickDriven);
+        if (currentComponents[removeIndex] is TickDriven) {
+          tickDrivenSteps.remove(currentComponents[removeIndex] as TickDriven);
         }
         removeIndex++;
       }
-      currentSteps.removeRange(0, removeIndex);
+      currentComponents.removeRange(0, removeIndex);
       if (removeIndex > 0) print("Remove $removeIndex steps");
 
       // 足場の当たり判定
-      for (int i = 0; i < currentSteps.length; i++) {
-        if (!currentSteps[i].isEnabled()) continue;
-        if (currentSteps[i].vCell + 6 < _player.verticalPositionCell) break;
-        if (currentSteps[i].checkCollision(_player)) {
-          currentSteps[i].onTrample(_player, elapsed);
+      for (var component in currentComponents) {
+        if (component is Step && !component.isEnabled()) continue;
+        if (component.vCell + 6 < _player.verticalPositionCell) break;
+        if (component.checkPlayerCollision(_player)) {
+          component.onCollision(_player, elapsed);
         }
       }
     }
@@ -145,76 +146,119 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AreaRestrictView(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final width = constraints.biggest.width;
-          final height = constraints.biggest.height;
-          final cellWidthPx = width / 24;
-          final cellHeightPx = cellWidthPx;
-          final centerCell = _player.verticalPositionCell + cameraShiftCell;
-          final displayOffsetPx = height / 2 - centerCell * cellHeightPx;
-          return Stack(
-            children: [
-              //---------------------------------------------- 背景
-              Positioned.fill(
-                  child: BackgroundView(
-                      width: width,
-                      height: height,
-                      centerCell: _player.verticalPositionCell)),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: LayoutBuilder(builder: (context, constraints) {
+                final width = constraints.biggest.width;
+                final height = constraints.biggest.height;
+                final cellWidthPx = width / 24;
+                final cellHeightPx = cellWidthPx;
+                final centerCell =
+                    _player.verticalPositionCell; // + cameraShiftCell;
+                final displayOffsetPx = height / 2 - centerCell * cellHeightPx;
+                return ClipRect(
+                  child: Stack(
+                    children: [
+                      //---------------------------------------------- 背景
+                      Positioned.fill(
+                          child: BackgroundView(
+                              width: width,
+                              height: height,
+                              centerCell: _player.verticalPositionCell)),
+                
+                      Transform.translate(
+                        offset: Offset(0, -cameraShiftCell * cellHeightPx),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            //---------------------------------------------- ステージ
+                            Positioned.fill(
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: currentComponents
+                                    .map((e) => e.place(cellWidthPx, cellHeightPx,
+                                        displayOffsetPx))
+                                    .toList(),
+                              ),
+                            ),
 
-              //---------------------------------------------- ステージ
-              Positioned.fill(
-                child: Stack(
-                  children: currentSteps
-                      .map((e) =>
-                          e.place(cellWidthPx, cellHeightPx, displayOffsetPx))
-                      .toList(),
-                ),
+                            // Positioned.fill(
+                            //   child: Stack(
+                            //     clipBehavior: Clip.none,
+                            //     children: currentComponents
+                            //         .map((e) {
+                            //           return Positioned(
+                            //             top: e.shellRectCell.top * cellHeightPx + displayOffsetPx,
+                            //             left: e.shellRectCell.left * cellWidthPx,
+                            //             child: Container(
+                            //               color: Colors.green.shade700.withOpacity(0.5),
+                            //               width: e.shellRectCell.width * cellWidthPx,
+                            //               height: e.shellRectCell.height * cellHeightPx,
+                            //             ),
+                            //           );
+                            //         })
+                            //         .toList(),
+                            //   ),
+                            // ),
+                
+                            //---------------------------------------------- プレイヤー
+                            _player.place(cellWidthPx, cellHeightPx, displayOffsetPx),
+
+                            // Positioned(
+                            //   top: _player.shellFootRectCell.top * cellHeightPx + displayOffsetPx,
+                            //   left: _player.shellFootRectCell.left * cellWidthPx,
+                            //             child: Container(
+                            //               color: Colors.pink.shade700.withOpacity(0.5),
+                            //               width: _player.shellFootRectCell.width * cellWidthPx,
+                            //               height: _player.shellFootRectCell.height * cellHeightPx,
+                            //             ),
+                            // )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+            //---------------------------------------------- 操作用スライダー
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Slider(
+                value: _player.horizontalVelocityCell,
+                onChanged: (value) {
+                  setState(() {
+                    _player.updateHorizontalVelocity(value);
+                  });
+                },
+                min: -80,
+                max: 80,
               ),
+            ),
 
-              //---------------------------------------------- プレイヤー
-              Positioned(
-                  left: cellWidthPx * (_player.horizontalPositionCell - 1.5),
-                  top: cellHeightPx * (18 - cameraShiftCell),
-                  child: _player.place(cellWidthPx, cellHeightPx)),
-
-              //---------------------------------------------- 操作用スライダー
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Slider(
-                  value: _player.horizontalVelocityCell,
-                  onChanged: (value) {
-                    setState(() {
-                      _player.updateHorizontalVelocity(value);
-                    });
-                  },
-                  min: -80,
-                  max: 80,
-                ),
+            //---------------------------------------------- メートル表示
+            Positioned(
+              right: 8,
+              top: 8,
+              child: Text(
+                minVerticalPositionCell == 0
+                    ? "0 m"
+                    : "${(-minVerticalPositionCell / 10).toStringAsFixed(0)} m",
+                style: const TextStyle(fontSize: 40),
               ),
+            ),
 
-              //---------------------------------------------- メートル表示
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Text(
-                  minVerticalPositionCell == 0
-                      ? "0 m"
-                      : "${(-minVerticalPositionCell / 10).toStringAsFixed(0)} m",
-                  style: const TextStyle(fontSize: 40),
-                ),
-              ),
-
-              //---------------------------------------------- カウントダウン
-              Align(
-                  child: CountDownView(
-                controller: _countDownController,
-                visible: _gameState == GameState.countDown,
-              ))
-            ],
-          );
-        }),
+            //---------------------------------------------- カウントダウン
+            Align(
+                child: CountDownView(
+              controller: _countDownController,
+              visible: _gameState == GameState.countDown,
+            ))
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

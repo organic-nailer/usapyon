@@ -24,7 +24,7 @@ class BackgroundView extends StatelessWidget {
       backgroundImage = Container(
         width: width,
         height: height * 2,
-        color: Colors.lightBlue,
+        color: Colors.lightBlue.shade700,
         child: Stack(
             children: List.generate(10, (_) {
           final r = Random();

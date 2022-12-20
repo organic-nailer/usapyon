@@ -6,15 +6,18 @@ class ItemSpring extends ItemOnStep {
   const ItemSpring(super.hCell, super.vCell, super.stageId);
 
   @override
-  void onTrample(PyonPlayer player, Duration elapsed) {
+  void onCollision(PyonPlayer player, Duration elapsed) {
     player.startRotation(elapsed, 1000);
   }
+
+  @override
+  Rect get shellRectCell => Rect.fromLTWH(hCell.toDouble() + 1, vCell - 2, 3, 2);
 
   @override
   Widget place(double cellWidthPx, double cellHeightPx, double displayOffsetPx) {
     return Positioned(
       left: (hCell + 1) * cellWidthPx,
-      top: (vCell - 3) * cellHeightPx + displayOffsetPx,
+      top: (vCell - 2) * cellHeightPx + displayOffsetPx,
       child: Image.asset(
         "assets/spring.png",
         width: cellWidthPx * 3,

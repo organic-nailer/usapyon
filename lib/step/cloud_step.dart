@@ -17,10 +17,10 @@ class CloudStep extends Step implements TickDriven {
   CloudStep(super.hCell, super.vCell, super.stageId);
 
   @override
-  void onTrample(PyonPlayer player, Duration elapsed) {
+  void onCollision(PyonPlayer player, Duration elapsed) {
     assert(_state == CloudStepState.appear);
     _state = CloudStepState.disappearing;
-    super.onTrample(player, elapsed);
+    super.onCollision(player, elapsed);
   }
 
   @override

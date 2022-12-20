@@ -1,23 +1,28 @@
+import 'package:flutter/material.dart';
 import 'package:usapyon/logic/pyon_player.dart';
-import 'package:usapyon/step/step.dart';
+import 'package:usapyon/step/rigid_body.dart';
+import 'package:usapyon/step/stage_component.dart';
 
-class ItemOnStep extends Step {
+///足場の上にあるアイテム
+///# 配置
+///
+///★の位置が座標
+///
+///```
+///　┌───┐
+///　│　　　│
+///　│　　　│
+///★┴───┘
+///```
+abstract class ItemOnStep extends StageComponent {
   const ItemOnStep(super.hCell, super.vCell, super.stageId);
 
   @override
-  bool isEnabled() => true;
+  Rect get shellFootRectCell => throw UnimplementedError();
 
   @override
-  bool checkCollision(PyonPlayer player) {
-    return vCell - 3 < player.verticalPositionCell 
-      && vCell - 1 > player.verticalPositionCell
-      && checkHorizontalCollision(player.horizontalPositionCell) 
-      && player.verticalVelocityCell > 10;
-  }
-
-  @override
-  bool checkHorizontalCollision(double playerPositionCell) {
-    return hCell+1 < playerPositionCell + 1.5 &&
-    playerPositionCell - 1.5 < hCell+1 + 3;
+  bool checkPlayerCollision(PyonPlayer player) {
+    return player.verticalVelocityCell > 10 &&
+        RigidBody.checkFootCollision(this, player);
   }
 }

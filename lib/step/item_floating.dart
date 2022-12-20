@@ -1,22 +1,19 @@
+import 'dart:ui';
+
 import 'package:usapyon/logic/pyon_player.dart';
+import 'package:usapyon/step/rigid_body.dart';
+import 'package:usapyon/step/stage_component.dart';
 import 'package:usapyon/step/step.dart';
 
-class ItemFloating extends Step {
+abstract class ItemFloating extends StageComponent {
   const ItemFloating(super.hCell, super.vCell, super.stageId);
 
   @override
-  bool isEnabled() => true;
+  Rect get shellFootRectCell => throw UnimplementedError();
+
 
   @override
-  bool checkCollision(PyonPlayer player) {
-    return vCell - 3 < player.verticalPositionCell
-      && vCell > player.verticalPositionCell - 6
-      && checkHorizontalCollision(player.horizontalPositionCell);
-  }
-
-  @override
-  bool checkHorizontalCollision(double playerPositionCell) {
-    return hCell < playerPositionCell + 1.5 &&
-    playerPositionCell - 1.5 < hCell + 2;
+  bool checkPlayerCollision(PyonPlayer player) {
+    return RigidBody.checkCollision(this, player);
   }
 }

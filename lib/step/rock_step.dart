@@ -12,9 +12,9 @@ class RockStep extends Step implements TickDriven {
   RockStep(super.hCell, super.vCell, super.stageId);
 
   @override
-  void onTrample(PyonPlayer player, Duration elapsed) {
+  void onCollision(PyonPlayer player, Duration elapsed) {
     removed = true;
-    super.onTrample(player, elapsed);
+    super.onCollision(player, elapsed);
   }
 
   @override

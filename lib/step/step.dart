@@ -1,31 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:usapyon/logic/pyon_player.dart';
+import 'package:usapyon/step/rigid_body.dart';
+import 'package:usapyon/step/stage_component.dart';
 
-class Step {
-  final int hCell;
-  final int vCell;
-  final int stageId;
-  const Step(this.hCell, this.vCell, this.stageId);
+/// 足場
+///
+///# 配置
+///
+///★の位置が座標
+///
+///```
+///┌───┐
+///│　　　│
+///│　　　│
+///★───┘
+///```
+abstract class Step extends StageComponent {
+  const Step(super.hCell, super.vCell, super.stageId);
 
-  void onTrample(PyonPlayer player, Duration elapsed) {
+  // RigidBody
+  @override
+  void onCollision(PyonPlayer player, Duration elapsed) {
     player.startTrample(elapsed);
   }
 
-  Widget place(
-          double cellWidthPx, double cellHeightPx, double displayOffsetPx) =>
-      throw UnimplementedError();
-  
-  bool isEnabled() => throw UnimplementedError();
+  @override
+  Rect get shellRectCell => Rect.fromLTWH(hCell.toDouble(), vCell - 1, 5, 1);
+  @override
+  Rect get shellFootRectCell => throw UnimplementedError();
 
-  bool checkCollision(PyonPlayer player) {
-    return vCell - 1 < player.verticalPositionCell 
-      && vCell + 0.5 > player.verticalPositionCell
-      && checkHorizontalCollision(player.horizontalPositionCell) 
-      && player.verticalVelocityCell > 10;
-  }
+  bool isEnabled() => true;
 
-  bool checkHorizontalCollision(double playerPositionCell) {
-    return hCell < playerPositionCell + 1.5 &&
-              playerPositionCell - 1.5 < hCell + 5;
+  @override
+  bool checkPlayerCollision(PyonPlayer player) {
+    return player.verticalVelocityCell > 10 &&
+        RigidBody.checkFootCollision(this, player);
   }
 }

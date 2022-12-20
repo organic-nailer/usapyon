@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Step;
+import 'package:usapyon/logic/pyon_player.dart';
 import 'package:usapyon/step/step.dart';
 import 'package:usapyon/step/tick_driven.dart';
 
@@ -10,22 +11,20 @@ class MoveStep extends Step implements TickDriven {
   MoveStep(super.hCell, super.vCell, super.stageId);
 
   @override
+  Rect get shellRectCell => Rect.fromLTWH(hCell + shiftCell, vCell - 1, 5, 1);
+
+  @override
   Widget place(
       double cellWidthPx, double cellHeightPx, double displayOffsetPx) {
     return Positioned(
       left: (hCell + shiftCell) * cellWidthPx,
       top: vCell * cellHeightPx - cellHeightPx + displayOffsetPx,
-      child: Image.asset(
-        "assets/move.jpg",
-        width: cellWidthPx * 5,
-        height: cellHeightPx,
-        color: Colors.blue.shade900
-      ),
+      child: Image.asset("assets/move.jpg",
+          width: cellWidthPx * 5,
+          height: cellHeightPx,
+          color: Colors.blue.shade900),
     );
   }
-
-  @override
-  bool isEnabled() => true;
 
   @override
   void onTick(Duration elapsed) {
@@ -39,11 +38,5 @@ class MoveStep extends Step implements TickDriven {
       phase = 2 - phase;
     }
     shiftCell = curve.transform(phase) * maxShiftCell;
-  }
-  
-  @override
-  bool checkHorizontalCollision(double playerPositionCell) {
-    return hCell + shiftCell < playerPositionCell + 1.5 &&
-              playerPositionCell - 1.5 < hCell + shiftCell + 5;
   }
 }
