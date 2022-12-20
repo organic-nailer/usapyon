@@ -48,11 +48,6 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
       }
       prevTick = elapsed;
     });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
 
     assert(_gameState == GameState.beforeStart);
 
@@ -76,9 +71,9 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   }
 
   void finishGame() {
-    _gameState = GameState.finished;
     _player.finish();
     ticker.stop(canceled: true);
+    _gameState = GameState.finished;
     Timer.run(() {
       Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
@@ -95,6 +90,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   }
 
   void forwardGame(Duration elapsed, Duration tickTime) {
+    assert(_gameState == GameState.inGame || _gameState == GameState.gameOver);
     _player.forward(tickTime);
     if (_gameState == GameState.gameOver) {
       cameraShiftCell -= 0.3;
@@ -212,11 +208,10 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
               //---------------------------------------------- カウントダウン
               Align(
-                child: CountDownView(
-                  controller: _countDownController,
-                  visible: _gameState == GameState.countDown,
-                )
-              )
+                  child: CountDownView(
+                controller: _countDownController,
+                visible: _gameState == GameState.countDown,
+              ))
             ],
           );
         }),
