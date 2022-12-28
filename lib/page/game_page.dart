@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart' hide Step;
 import 'package:flutter/scheduler.dart';
 import 'package:usapyon/logic/generate_random_stage.dart';
+import 'package:usapyon/logic/player_state.dart';
+import 'package:usapyon/stage/stage_data.dart';
 import 'package:usapyon/step/stage_component.dart';
 import 'package:usapyon/view/area_restrict_view.dart';
 import 'package:usapyon/view/background_view.dart';
@@ -34,6 +36,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
   GameState _gameState = GameState.beforeStart;
   late final CountDownController _countDownController;
+  bool firstShooted = false;
 
   @override
   void initState() {
@@ -85,13 +88,18 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   }
 
   void addStage(int stageId) {
-    final newSteps = generateRandomStage(stageId);
+    // final newSteps = generateRandomStage(stageId);
+    final newSteps = getPredefinedStage(stageId);
     currentComponents.addAll(newSteps);
     tickDrivenSteps.addAll(newSteps.whereType<TickDriven>());
   }
 
   void forwardGame(Duration elapsed, Duration tickTime) {
     assert(_gameState == GameState.inGame || _gameState == GameState.gameOver);
+    if (!firstShooted) { 
+      firstShooted = true;
+      _player.startShooting(tickTime, 2000);
+    }
     _player.forward(tickTime);
     if (_gameState == GameState.gameOver) {
       cameraShiftCell -= 0.3;
