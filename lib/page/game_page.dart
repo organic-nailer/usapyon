@@ -69,7 +69,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
     gyroscopeObserver.listen(() {
       isGyroscopeAvailable = true;
       setState(() {
-        _player.updateHorizontalVelocity((gyroscopeObserver.x * 3 * 80).clamp(-80, 80));
+        _player.updateHorizontalVelocity((gyroscopeObserver.y * 3 * 80).clamp(-80, 80));
       });
     });
   }
@@ -244,12 +244,12 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
               }),
             ),
             //---------------------------------------------- 操作用スライダー
-            Positioned(
+            if (!isGyroscopeAvailable) Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: Container(
-                color: isGyroscopeAvailable ? Colors.red.withOpacity(0.5) : Colors.white54,
+                color: Colors.white54,
                 child: Slider(
                   value: _player.horizontalVelocityCell,
                   onChanged: (value) {
