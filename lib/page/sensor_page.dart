@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:usapyon/logic/accelerometer_observer.dart';
-import 'package:usapyon/logic/gyroscope_observer.dart';
 import 'package:usapyon/page/game_page.dart';
 import 'package:usapyon/view/area_restrict_view.dart';
 import 'package:usapyon/view/banner_view.dart';
