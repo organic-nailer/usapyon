@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart' hide Step;
 import 'package:flutter/scheduler.dart';
 import 'package:usapyon/logic/generate_random_stage.dart';
+import 'package:usapyon/logic/gyroscope_observer.dart';
 import 'package:usapyon/logic/player_state.dart';
 import 'package:usapyon/stage/stage_data.dart';
 import 'package:usapyon/step/stage_component.dart';
@@ -38,6 +39,9 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   late final CountDownController _countDownController;
   bool firstShooted = false;
 
+  final gyroscopeObserver = GyroscopeObserver();
+  bool isGyroscopeAvailable = false;
+
   @override
   void initState() {
     super.initState();
@@ -61,12 +65,20 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
       _gameState = GameState.inGame;
       startGame();
     });
+
+    gyroscopeObserver.listen(() {
+      isGyroscopeAvailable = true;
+      setState(() {
+        _player.updateHorizontalVelocity((gyroscopeObserver.x * 3 * 80).clamp(-80, 80));
+      });
+    });
   }
 
   @override
   void dispose() {
     ticker.dispose();
     _countDownController.dispose();
+    gyroscopeObserver.dispose();
     super.dispose();
   }
 
@@ -237,7 +249,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
               right: 0,
               bottom: 0,
               child: Container(
-                color: Colors.white54,
+                color: isGyroscopeAvailable ? Colors.red.withOpacity(0.5) : Colors.white54,
                 child: Slider(
                   value: _player.horizontalVelocityCell,
                   onChanged: (value) {
@@ -249,6 +261,11 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   max: 80,
                 ),
               ),
+            ),
+            Positioned(
+              top: 8,
+              left: 8,
+              child: Text(gyroscopeObserver.toString()),
             ),
 
             //---------------------------------------------- メートル表示
