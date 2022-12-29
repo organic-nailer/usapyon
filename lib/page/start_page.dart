@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:orientation_web/orientation_web.dart';
 import 'package:usapyon/page/game_page.dart';
 import 'package:usapyon/view/area_restrict_view.dart';
 import 'package:usapyon/view/banner_view.dart';
@@ -22,6 +23,8 @@ class StartPageState extends State<StartPage>
     rabbitController =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
     rabbitController.repeat(reverse: true);
+
+    requestDeviceOrientationEventPermission();
   }
 
   @override

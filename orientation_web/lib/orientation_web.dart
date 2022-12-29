@@ -2,8 +2,10 @@ library orientation_web;
 
 import 'dart:async';
 import 'dart:html';
+import 'package:js/js.dart';
 
-
+@JS("requestDeviceOrientationEventPermission")
+external void requestDeviceOrientationEventPermission();
 
 StreamController<OrientationEvent>? _orientationStreamController;
 late Stream<OrientationEvent> _orientationResultStream;
