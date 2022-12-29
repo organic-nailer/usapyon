@@ -69,7 +69,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
     gyroscopeObserver.listen(() {
       isGyroscopeAvailable = true;
       setState(() {
-        _player.updateHorizontalVelocity((gyroscopeObserver.y * 3 * 80).clamp(-80, 80));
+        _player.updateHorizontalVelocity((gyroscopeObserver.y * 80).clamp(-80, 80));
       });
     });
   }
@@ -261,11 +261,6 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   max: 80,
                 ),
               ),
-            ),
-            Positioned(
-              top: 8,
-              left: 8,
-              child: Text(gyroscopeObserver.toString()),
             ),
 
             //---------------------------------------------- メートル表示
