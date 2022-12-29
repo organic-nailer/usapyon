@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart' hide Step;
 import 'package:flutter/scheduler.dart';
+import 'package:usapyon/logic/accelerometer_observer.dart';
 import 'package:usapyon/logic/generate_random_stage.dart';
 import 'package:usapyon/logic/gyroscope_observer.dart';
 import 'package:usapyon/logic/player_state.dart';
@@ -39,8 +40,8 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   late final CountDownController _countDownController;
   bool firstShooted = false;
 
-  final gyroscopeObserver = GyroscopeObserver();
-  bool isGyroscopeAvailable = false;
+  final accelerometerObserver = AccelerometerObserver();
+  bool isAccelerometerAvailable = false;
 
   @override
   void initState() {
@@ -66,10 +67,13 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
       startGame();
     });
 
-    gyroscopeObserver.listen(() {
-      isGyroscopeAvailable = true;
+    accelerometerObserver.listen(() {
+      isAccelerometerAvailable = true;
       setState(() {
-        _player.updateHorizontalVelocity((gyroscopeObserver.y * 80).clamp(-80, 80));
+        final ax = accelerometerObserver.x;
+        final az = accelerometerObserver.z;
+        final pitchAngle = -ax / sqrt(ax*ax + az*az) * 180 / pi;
+        _player.updateHorizontalVelocity((pitchAngle * 1.8).clamp(-80, 80));
       });
     });
   }
@@ -78,7 +82,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   void dispose() {
     ticker.dispose();
     _countDownController.dispose();
-    gyroscopeObserver.dispose();
+    accelerometerObserver.dispose();
     super.dispose();
   }
 
@@ -244,7 +248,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
               }),
             ),
             //---------------------------------------------- 操作用スライダー
-            if (!isGyroscopeAvailable) Positioned(
+            if (!isAccelerometerAvailable) Positioned(
               left: 0,
               right: 0,
               bottom: 0,
@@ -261,6 +265,11 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   max: 80,
                 ),
               ),
+            ),
+            Positioned(
+              top: 8,
+              left: 8,
+              child: Text(accelerometerObserver.toString()),
             ),
 
             //---------------------------------------------- メートル表示

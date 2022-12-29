@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:usapyon/page/game_page.dart';
+import 'package:usapyon/page/sensor_page.dart';
 import 'package:usapyon/page/stage_preview_page.dart';
 import 'package:usapyon/page/start_page.dart';
 
