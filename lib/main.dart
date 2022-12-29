@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:usapyon/page/game_page.dart';
 import 'package:usapyon/page/stage_preview_page.dart';
+import 'package:usapyon/page/start_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
     //    home: StagePreviewPage(),);
-        home: const GamePage());
-    // home: StartPage());
+    //    home: const GamePage());
+    home: const StartPage());
   }
 }

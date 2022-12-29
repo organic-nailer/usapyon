@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:usapyon/page/game_page.dart';
 import 'package:usapyon/view/area_restrict_view.dart';
 import 'package:usapyon/view/banner_view.dart';
+import 'package:usapyon/view/concentration_line_view.dart';
 import 'package:usapyon/view/pyon_button.dart';
 
 class StartPage extends StatefulWidget {
@@ -48,6 +49,9 @@ class StartPageState extends State<StartPage>
                       color: Colors.green,
                     ),
                   ),
+                ),
+                const Positioned.fill(
+                  child: ConcentrationLineView(split: 32, color: Colors.white24,),
                 ),
                 Positioned(
                   top: 0,
