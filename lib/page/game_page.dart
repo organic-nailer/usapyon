@@ -70,9 +70,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
     accelerometerObserver.listen(() {
       isAccelerometerAvailable = true;
       setState(() {
-        final ax = accelerometerObserver.x;
-        final az = accelerometerObserver.z;
-        final pitchAngle = -ax / sqrt(ax*ax + az*az) * 180 / pi;
+        final pitchAngle = accelerometerObserver.gamma;
         _player.updateHorizontalVelocity((pitchAngle * 1.8).clamp(-80, 80));
       });
     });

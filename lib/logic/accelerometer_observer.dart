@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:sensors_plus/sensors_plus.dart';
+import 'package:orientation_web/orientation_web.dart';
 
 class AccelerometerObserver {
-  double x = 0.0;
-  double y = 0.0;
-  double z = 0.0;
+  double alpha = 0.0;
+  double gamma = 0.0;
+  double beta = 0.0;
 
-  StreamSubscription<AccelerometerEvent>? _accelerometerEvents;
+  StreamSubscription<OrientationEvent>? _accelerometerEvents;
   Stopwatch stopwatch = Stopwatch();
   double _lastTime = 0.0;
 
@@ -19,21 +19,15 @@ class AccelerometerObserver {
     }
     stopwatch.start();
 
-    _accelerometerEvents = accelerometerEvents.listen((AccelerometerEvent event) {
+    _accelerometerEvents = orientationEvents.listen((OrientationEvent event) {
       final interval = stopwatch.elapsedMilliseconds / 1000 - _lastTime;
       print(1 / interval);
-      x = event.x;
-      y = event.y;
-      z = event.z;
+      alpha = event.alpha;
+      gamma = event.gamma;
+      beta = event.beta;
       onChange();
       _lastTime = stopwatch.elapsedMilliseconds / 1000;
     });
-  }
-
-  void resetPosition() {
-    x = 0.0;
-    y = 0.0;
-    z = 0.0;
   }
 
   void dispose() {
@@ -44,6 +38,6 @@ class AccelerometerObserver {
 
   @override
   String toString() {
-    return 'AccelerometerObserver{x: $x, y: $y, z: $z}';
+    return 'AccelerometerObserver{alpha: ${alpha.toStringAsFixed(3)}, gamma: ${gamma.toStringAsFixed(3)}, beta: ${beta.toStringAsFixed(3)}}';
   }
 }

@@ -21,5 +21,6 @@ class MyApp extends StatelessWidget {
     //    home: StagePreviewPage(),);
     //    home: const GamePage());
     home: const StartPage());
+    // home: const SensorPage());
   }
 }

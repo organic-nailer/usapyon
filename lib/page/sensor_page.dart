@@ -31,13 +31,7 @@ class SensorPageState extends State<SensorPage> {
     super.initState();
     accelerometerObserver.listen(() {
       setState(() {
-        ax = accelerometerObserver.x;
-        ay = accelerometerObserver.y;
-        az = accelerometerObserver.z;
-        // nc = (0,1,0) × (ax,ay,az) = (az,0,-ax)
-        // pitch_angle = 90deg - (0,0,1) * nc = 90deg - (-ax) / sqrt(az^2+ax^2)
-        // (0,0,1) * (ax,ay,az) = (az) / sqrt(ax^2+ay^2+az^2)
-        pitchAngle = -ax / sqrt(ax*ax + az*az) * 180 / pi;
+        pitchAngle = accelerometerObserver.gamma;
       });
     });
   }
