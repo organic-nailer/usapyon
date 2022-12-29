@@ -36,11 +36,11 @@ class StartPageState extends State<StartPage>
       backgroundColor: Colors.blue,
       body: AreaRestrictView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Stack(
-                      children: [
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
                 Align(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -51,7 +51,10 @@ class StartPageState extends State<StartPage>
                   ),
                 ),
                 const Positioned.fill(
-                  child: ConcentrationLineView(split: 32, color: Colors.white24,),
+                  child: ConcentrationLineView(
+                    split: 32,
+                    color: Colors.white24,
+                  ),
                 ),
                 Positioned(
                   top: 0,
@@ -83,8 +86,9 @@ class StartPageState extends State<StartPage>
                           child: PyonButton(
                             text: "スタート",
                             onPressed: () {
-                              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                                  builder: (_) => const GamePage()));
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (_) => const GamePage()));
                             },
                           )),
                       Padding(
@@ -92,7 +96,7 @@ class StartPageState extends State<StartPage>
                         child: PyonButton(
                           text: "ライセンス",
                           onPressed: () {
-                            showAboutDialog(context: context);
+                            showLicensePage(context: context);
                           },
                         ),
                       ),
@@ -103,12 +107,12 @@ class StartPageState extends State<StartPage>
                     ],
                   ),
                 )
-                      ],
-                    ),
-              ),
-              const BannerView()
-            ],
-          )),
+              ],
+            ),
+          ),
+          const BannerView()
+        ],
+      )),
     );
   }
 }

@@ -96,7 +96,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
 
   void forwardGame(Duration elapsed, Duration tickTime) {
     assert(_gameState == GameState.inGame || _gameState == GameState.gameOver);
-    if (!firstShooted) { 
+    if (!firstShooted) {
       firstShooted = true;
       _player.startShooting(tickTime, 2000);
     }
@@ -174,7 +174,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
                               width: width,
                               height: height,
                               centerCell: _player.verticalPositionCell)),
-                
+
                       Transform.translate(
                         offset: Offset(0, -cameraShiftCell * cellHeightPx),
                         child: Stack(
@@ -185,8 +185,8 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
                               child: Stack(
                                 clipBehavior: Clip.none,
                                 children: currentComponents
-                                    .map((e) => e.place(cellWidthPx, cellHeightPx,
-                                        displayOffsetPx))
+                                    .map((e) => e.place(cellWidthPx,
+                                        cellHeightPx, displayOffsetPx))
                                     .toList(),
                               ),
                             ),
@@ -209,9 +209,10 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
                             //         .toList(),
                             //   ),
                             // ),
-                
+
                             //---------------------------------------------- プレイヤー
-                            _player.place(cellWidthPx, cellHeightPx, displayOffsetPx),
+                            _player.place(
+                                cellWidthPx, cellHeightPx, displayOffsetPx),
 
                             // Positioned(
                             //   top: _player.shellFootRectCell.top * cellHeightPx + displayOffsetPx,
@@ -235,15 +236,18 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
               left: 0,
               right: 0,
               bottom: 0,
-              child: Slider(
-                value: _player.horizontalVelocityCell,
-                onChanged: (value) {
-                  setState(() {
-                    _player.updateHorizontalVelocity(value);
-                  });
-                },
-                min: -80,
-                max: 80,
+              child: Container(
+                color: Colors.white54,
+                child: Slider(
+                  value: _player.horizontalVelocityCell,
+                  onChanged: (value) {
+                    setState(() {
+                      _player.updateHorizontalVelocity(value);
+                    });
+                  },
+                  min: -80,
+                  max: 80,
+                ),
               ),
             ),
 

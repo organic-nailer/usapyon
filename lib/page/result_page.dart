@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:usapyon/logic/share_sns.dart';
 import 'package:usapyon/page/game_page.dart';
 import 'package:usapyon/view/area_restrict_view.dart';
 import 'package:usapyon/view/banner_view.dart';
@@ -84,7 +84,8 @@ class ResultPageState extends State<ResultPage>
                             padding: const EdgeInsets.all(16.0),
                             child: Text(
                               "獲得単位数 $aquisitionCredits",
-                              style: const TextStyle(fontSize: 24, color: Colors.red),
+                              style: const TextStyle(
+                                  fontSize: 24, color: Colors.red),
                             ),
                           ),
                           Row(
@@ -95,7 +96,9 @@ class ResultPageState extends State<ResultPage>
                                 child: IconButton(
                                   icon: Image.asset("assets/twitter.png"),
                                   onPressed: () async {
-                                    await launchUrlString("https://www.twitter.com");
+                                    shareTwitter(
+                                        widget.heightMeter.toStringAsFixed(0),
+                                        getGrade(widget.heightMeter));
                                   },
                                   iconSize: 64,
                                 ),
@@ -105,7 +108,7 @@ class ResultPageState extends State<ResultPage>
                                 child: IconButton(
                                   icon: Image.asset("assets/facebook.png"),
                                   onPressed: () async {
-                                    await launchUrlString("https://facebook.com");
+                                    shareFacebook();
                                   },
                                   iconSize: 64,
                                 ),
@@ -115,7 +118,9 @@ class ResultPageState extends State<ResultPage>
                                 child: IconButton(
                                   icon: Image.asset("assets/line.png"),
                                   onPressed: () async {
-                                    await launchUrlString("https://line.me");
+                                    shareLine(
+                                        widget.heightMeter.toStringAsFixed(0),
+                                        getGrade(widget.heightMeter));
                                   },
                                   iconSize: 64,
                                 ),
@@ -142,7 +147,8 @@ class ResultPageState extends State<ResultPage>
                                       onPressed: () {
                                         Navigator.of(context).pushReplacement(
                                             MaterialPageRoute(
-                                                builder: (_) => const StartPage()));
+                                                builder: (_) =>
+                                                    const StartPage()));
                                       },
                                     ),
                                   )),
@@ -155,7 +161,8 @@ class ResultPageState extends State<ResultPage>
                                       onPressed: () {
                                         Navigator.of(context).pushReplacement(
                                             MaterialPageRoute(
-                                                builder: (_) => const GamePage()));
+                                                builder: (_) =>
+                                                    const GamePage()));
                                       },
                                     ),
                                   ))
