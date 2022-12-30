@@ -2,21 +2,25 @@
 
 function requestDeviceOrientationEventPermission() {
     console.log("requestDeviceOrientationEventPermission - called.");
+    window.alert("requestDeviceOrientationEventPermission - called.");
   
     if (typeof DeviceOrientationEvent !== "undefined") {
+      window.alert("supports DeviceOrientationEvent");
       // feature detect
       if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        window.alert("is Safari 13+ and has requestPermission");
         return DeviceOrientationEvent.requestPermission()
           .then((permissionState) => {
             console.log(
               "requestDeviceOrientationEventPermission – permissionState: ",
               permissionState
             );
+            window.alert("requestDeviceOrientationEventPermission – permissionState: " + permissionState);
             return permissionState;
           })
-          .catch((err) =>
-            console.warn("requestDeviceOrientationEventPermission – Error: ", err)
-          );
+          .catch((err) => {
+            window.alert("requestDeviceOrientationEventPermission – err: " + err);
+          });
       } else {
         // handle regular non iOS 13+ devices
         console.warn(

@@ -24,7 +24,7 @@ class StartPageState extends State<StartPage>
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
     rabbitController.repeat(reverse: true);
 
-    requestDeviceOrientationEventPermission();
+    // requestDeviceOrientationEventPermission();
   }
 
   @override
@@ -81,7 +81,7 @@ class StartPageState extends State<StartPage>
                                     end: const Offset(0, 0.05))),
                             child: Image.asset(
                               "assets/rabbit_title.png",
-                              height: 300,
+                              height: MediaQuery.of(context).size.height / 3,
                             )),
                       ),
                       Padding(
@@ -105,7 +105,9 @@ class StartPageState extends State<StartPage>
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: PyonButton(text: "インフォメーション"),
+                        child: PyonButton(text: "インフォメーション", onPressed: () {
+                          requestDeviceOrientationEventPermission();
+                        },),
                       )
                     ],
                   ),
