@@ -189,7 +189,7 @@ class StartPageState extends State<StartPage>
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(isMotionEnabled ? "傾き:ON" : "傾き:OFF", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),),
+                              child: Text(isMotionEnabled ? "傾き:ON" : "傾き:OFF", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
                             )
                           ],
                         );
