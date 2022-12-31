@@ -40,6 +40,7 @@ dependencies:
   orientation_web:
     path: ./orientation_web
   shared_preferences: ^2.0.15
+  google_fonts: ^3.0.1
 
 dev_dependencies:
   flutter_test:
