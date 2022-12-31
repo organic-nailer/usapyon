@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:usapyon/logic/game_storage.dart';
+import 'package:usapyon/logic/height_to_grade.dart';
 import 'package:usapyon/logic/share_sns.dart';
 import 'package:usapyon/page/game_page.dart';
 import 'package:usapyon/view/area_restrict_view.dart';
@@ -9,7 +11,8 @@ import 'package:usapyon/view/stroked_text.dart';
 
 class ResultPage extends StatefulWidget {
   final double heightMeter;
-  const ResultPage(this.heightMeter, {super.key});
+  final bool isMotionEnabled;
+  const ResultPage(this.heightMeter, this.isMotionEnabled, {super.key});
 
   @override
   State<StatefulWidget> createState() => ResultPageState();
@@ -27,15 +30,8 @@ class ResultPageState extends State<ResultPage>
     _gradeTextController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1000));
     _gradeTextController.forward();
-  }
 
-  String getGrade(double heightMeter) {
-    if (heightMeter < 200) return "仮入部級！";
-    if (heightMeter < 500) return "新人部員級！";
-    if (heightMeter < 2483) return "日吉代表級！";
-    if (heightMeter < 3776) return "総代表級！";
-    if (heightMeter < 8848) return "名誉代表級！";
-    return "LEGEND OB級！";
+    GameStorage.instance.saveScore(widget.heightMeter);
   }
 
   @override
@@ -52,123 +48,129 @@ class ResultPageState extends State<ResultPage>
                     padding: const EdgeInsets.all(16),
                     child: Container(
                       color: Colors.white.withOpacity(0.5),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const StrokedText(
-                            text: "結果",
-                            strokeColor: Colors.black,
-                            innerColor: Colors.white,
-                            fontSize: 40,
-                          ),
-                          Text(
-                            "${widget.heightMeter.toStringAsFixed(0)}m",
-                            style: const TextStyle(fontSize: 60),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 32),
-                            child: ScaleTransition(
-                              scale: _gradeTextController
-                                  .drive(CurveTween(curve: Curves.easeInCubic))
-                                  .drive(Tween(begin: 5.0, end: 1.0)),
-                              child: StrokedText(
-                                text: getGrade(widget.heightMeter),
-                                fontSize: 50,
-                                strokeColor: Colors.white,
-                                innerColor: Colors.green,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              "獲得単位数 $aquisitionCredits",
-                              style: const TextStyle(
-                                  fontSize: 24, color: Colors.red),
-                            ),
-                          ),
-                          Row(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              StrokedText(
+                                text: "結果",
+                                strokeColor: Colors.black,
+                                innerColor: Colors.white,
+                                fontSize: constraints.biggest.height / 18,
+                              ),
+                              Text(
+                                "${widget.heightMeter.toStringAsFixed(0)}m",
+                                style: TextStyle(fontSize: constraints.biggest.height / 10),
+                              ),
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: IconButton(
-                                  icon: Image.asset("assets/twitter.png"),
-                                  onPressed: () async {
-                                    shareTwitter(
-                                        widget.heightMeter.toStringAsFixed(0),
-                                        getGrade(widget.heightMeter));
-                                  },
-                                  iconSize: 64,
+                                padding: EdgeInsets.symmetric(vertical: constraints.biggest.height / 24),
+                                child: ScaleTransition(
+                                  scale: _gradeTextController
+                                      .drive(CurveTween(curve: Curves.easeInCubic))
+                                      .drive(Tween(begin: 5.0, end: 1.0)),
+                                  child: StrokedText(
+                                    text: getGrade(widget.heightMeter),
+                                    fontSize: constraints.biggest.height / 12,
+                                    strokeColor: Colors.white,
+                                    innerColor: Colors.green,
+                                  ),
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: IconButton(
-                                  icon: Image.asset("assets/facebook.png"),
-                                  onPressed: () async {
-                                    shareFacebook();
-                                  },
-                                  iconSize: 64,
+                                padding: const EdgeInsets.all(16.0),
+                                child: Text(
+                                  "獲得単位数 $aquisitionCredits",
+                                  style: TextStyle(
+                                      fontSize: constraints.biggest.height / 32, color: Colors.red),
                                 ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(
+                                      icon: Image.asset("assets/twitter.png"),
+                                      onPressed: () async {
+                                        shareTwitter(
+                                            widget.heightMeter.toStringAsFixed(0),
+                                            getGrade(widget.heightMeter));
+                                      },
+                                      iconSize: constraints.biggest.height / 10,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(
+                                      icon: Image.asset("assets/facebook.png"),
+                                      onPressed: () async {
+                                        shareFacebook();
+                                      },
+                                      iconSize: constraints.biggest.height / 10,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(
+                                      icon: Image.asset("assets/line.png"),
+                                      onPressed: () async {
+                                        shareLine(
+                                            widget.heightMeter.toStringAsFixed(0),
+                                            getGrade(widget.heightMeter));
+                                      },
+                                      iconSize: constraints.biggest.height / 10,
+                                    ),
+                                  )
+                                ],
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: IconButton(
-                                  icon: Image.asset("assets/line.png"),
-                                  onPressed: () async {
-                                    shareLine(
-                                        widget.heightMeter.toStringAsFixed(0),
-                                        getGrade(widget.heightMeter));
-                                  },
-                                  iconSize: 64,
+                                child: StrokedText(
+                                  text: "記録を友達にシェアしよう！",
+                                  fontSize: constraints.biggest.height /24,
+                                  strokeColor: Colors.white,
+                                  innerColor: Colors.black,
                                 ),
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                      flex: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: PyonButton(
+                                          text: "タイトルへ",
+                                          height: constraints.biggest.height / 20,
+                                          onPressed: () {
+                                            Navigator.of(context).pushReplacement(
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        const StartPage()));
+                                          },
+                                        ),
+                                      )),
+                                  Expanded(
+                                      flex: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: PyonButton(
+                                          text: "リトライ",
+                                          height: constraints.biggest.height / 20,
+                                          onPressed: () {
+                                            Navigator.of(context).pushReplacement(
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        GamePage(isMotionEnabled: widget.isMotionEnabled,)));
+                                          },
+                                        ),
+                                      ))
+                                ],
                               )
                             ],
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: StrokedText(
-                              text: "記録を友達にシェアしよう！",
-                              fontSize: 32,
-                              strokeColor: Colors.white,
-                              innerColor: Colors.black,
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                  flex: 1,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: PyonButton(
-                                      text: "タイトルへ",
-                                      onPressed: () {
-                                        Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    const StartPage()));
-                                      },
-                                    ),
-                                  )),
-                              Expanded(
-                                  flex: 1,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: PyonButton(
-                                      text: "リトライ",
-                                      onPressed: () {
-                                        Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    const GamePage()));
-                                      },
-                                    ),
-                                  ))
-                            ],
-                          )
-                        ],
+                          );
+                        }
                       ),
                     )),
               ),

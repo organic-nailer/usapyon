@@ -28,7 +28,6 @@ class StrokedText extends StatelessWidget {
           text,
           style: TextStyle(
             fontSize: fontSize,
-            fontWeight: FontWeight.bold,
             foreground: Paint()
               ..style = PaintingStyle.stroke
               ..strokeWidth = 1

@@ -16,7 +16,8 @@ import 'package:usapyon/step/tick_driven.dart';
 import 'package:usapyon/view/count_down_view.dart';
 
 class GamePage extends StatefulWidget {
-  const GamePage({super.key});
+  final bool isMotionEnabled;
+  const GamePage({super.key, required this.isMotionEnabled});
 
   @override
   State<StatefulWidget> createState() => GamePageState();
@@ -64,13 +65,15 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
       startGame();
     });
 
-    accelerometerObserver.listen(() {
-      isAccelerometerAvailable = true;
-      setState(() {
-        final pitchAngle = accelerometerObserver.gamma;
-        _player.updateHorizontalVelocity((pitchAngle * 1.8).clamp(-80, 80));
+    if (widget.isMotionEnabled) {
+      accelerometerObserver.listen(() {
+        isAccelerometerAvailable = widget.isMotionEnabled;
+        setState(() {
+          final pitchAngle = accelerometerObserver.gamma;
+          _player.updateHorizontalVelocity((pitchAngle * 1.8).clamp(-80, 80));
+        });
       });
-    });
+    }
   }
 
   @override
@@ -93,7 +96,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
       Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
         pageBuilder: (_, __, ___) =>
-            ResultPage((-minVerticalPositionCell / 10)),
+            ResultPage((-minVerticalPositionCell / 10), widget.isMotionEnabled),
       ));
     });
   }
@@ -164,6 +167,7 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue,
       body: AreaRestrictView(
         child: Stack(
           children: [
@@ -243,29 +247,31 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
               }),
             ),
             //---------------------------------------------- 操作用スライダー
-            if (!isAccelerometerAvailable) Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                color: Colors.white54,
-                child: Slider(
-                  value: _player.horizontalVelocityCell,
-                  onChanged: (value) {
-                    setState(() {
-                      _player.updateHorizontalVelocity(value);
-                    });
-                  },
-                  min: -80,
-                  max: 80,
+            if (!isAccelerometerAvailable)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  color: Colors.white54,
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Slider(
+                    value: _player.horizontalVelocityCell,
+                    onChanged: (value) {
+                      setState(() {
+                        _player.updateHorizontalVelocity(value);
+                      });
+                    },
+                    min: -80,
+                    max: 80,
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              top: 8,
-              left: 8,
-              child: Text(accelerometerObserver.toString()),
-            ),
+            // Positioned(
+            //   top: 8,
+            //   left: 8,
+            //   child: Text(accelerometerObserver.toString()),
+            // ),
 
             //---------------------------------------------- メートル表示
             Positioned(
@@ -288,13 +294,13 @@ class GamePageState extends State<GamePage> with TickerProviderStateMixin {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _player.verticalVelocityCell = -60;
-          // _player.startShooting(prevTick!, 2 * 1000);
-        },
-        child: const Icon(Icons.upcoming),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     _player.verticalVelocityCell = -60;
+      //     // _player.startShooting(prevTick!, 2 * 1000);
+      //   },
+      //   child: const Icon(Icons.upcoming),
+      // ),
     );
   }
 }

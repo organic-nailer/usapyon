@@ -39,6 +39,7 @@ dependencies:
   url_launcher: ^6.1.7
   orientation_web:
     path: ./orientation_web
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:

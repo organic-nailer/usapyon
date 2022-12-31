@@ -21,7 +21,6 @@ class AccelerometerObserver {
 
     _accelerometerEvents = orientationEvents.listen((OrientationEvent event) {
       final interval = stopwatch.elapsedMilliseconds / 1000 - _lastTime;
-      print(1 / interval);
       alpha = event.alpha;
       gamma = event.gamma;
       beta = event.beta;
